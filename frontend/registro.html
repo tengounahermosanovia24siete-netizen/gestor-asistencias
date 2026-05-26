@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Registro</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #111827;
+      padding: 30px;
+      border-radius: 16px;
+      width: 320px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #1f2937;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #10b981;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #059669;
+    }
+
+    #msg {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Registro</h2>
+
+<input id="nombre" placeholder="Nombre">
+<input id="apellidos" placeholder="Apellidos">
+<input id="boleta" placeholder="Boleta">
+
+<button onclick="registrar()">Registrar</button>
+
+<p id="msg"></p>
+
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const session_id = params.get("sid");
+
+async function registrar() {
+  const res = await fetch("http://localhost:3000/asistencias", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id,
+      nombre: document.getElementById("nombre").value,
+      apellidos: document.getElementById("apellidos").value,
+      boleta: document.getElementById("boleta").value
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("msg").innerText =
+    data.message || data.error;
+}
+</script>
+
+</body>
+</html>

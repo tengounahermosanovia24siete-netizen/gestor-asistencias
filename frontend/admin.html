@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .card {
+      background: #111827;
+      padding: 30px;
+      border-radius: 16px;
+      width: 350px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      text-align: left;
+      margin-top: 10px;
+      font-size: 14px;
+      color: #9ca3af;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      margin-top: 5px;
+      background: #1f2937;
+      color: white;
+    }
+
+    button {
+      width: 100%;
+      margin-top: 20px;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: #3b82f6;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2563eb;
+      transform: scale(1.03);
+    }
+
+    img {
+      margin-top: 20px;
+      border-radius: 10px;
+      background: white;
+      padding: 10px;
+    }
+
+    a {
+      color: #60a5fa;
+      word-break: break-all;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>Crear sesión</h2>
+
+<label>Materia</label>
+<select id="materia"></select>
+
+<label>Profesor</label>
+<select id="profesor"></select>
+
+<label>Fecha</label>
+<input id="fecha" type="date">
+
+<label>Hora</label>
+<input id="hora" type="time">
+
+<button onclick="crearSesion()">Generar QR</button>
+
+<img id="qr" width="200"/>
+
+<p>
+  <a id="link" target="_blank"></a>
+</p>
+
+</div>
+
+<script>
+async function crearSesion() {
+  const res = await fetch("http://localhost:3000/sesiones", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      materia: document.getElementById("materia").value,
+      profesor: document.getElementById("profesor").value,
+      fecha_asesoria: document.getElementById("fecha").value,
+      hora_asesoria: document.getElementById("hora").value
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("qr").src = data.qr;
+
+  const link = document.getElementById("link");
+  link.href = data.url;
+  link.textContent = data.url;
+}
+
+async function cargarMaestros() {
+  const res = await fetch("http://localhost:3000/maestros");
+  const data = await res.json();
+
+  const materiaSelect = document.getElementById("materia");
+  const profesorSelect = document.getElementById("profesor");
+
+  const materiasUnicas = [...new Set(data.map(m => m.materia))];
+
+  materiasUnicas.forEach(mat => {
+    const option = document.createElement("option");
+    option.value = mat;
+    option.textContent = mat;
+    materiaSelect.appendChild(option);
+  });
+
+  data.forEach(m => {
+    const profesorOption = document.createElement("option");
+    profesorOption.value = m.nombre + " " + m.apellidos;
+    profesorOption.textContent = m.nombre + " " + m.apellidos;
+    profesorOption.dataset.materia = m.materia;
+    profesorSelect.appendChild(profesorOption);
+  });
+
+  profesorSelect.addEventListener("change", () => {
+    const selected = profesorSelect.selectedOptions[0];
+    materiaSelect.value = selected.dataset.materia;
+  });
+
+  if (profesorSelect.options.length > 0) {
+    materiaSelect.value = profesorSelect.options[0].dataset.materia;
+  }
+}
+
+cargarMaestros();
+</script>
+
+</body>
+</html>

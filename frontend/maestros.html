@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Maestros</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      padding: 20px;
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+      background: #111827;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: center;
+      border-bottom: 1px solid #374151;
+    }
+
+    th {
+      background: #1f2937;
+    }
+
+    button {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .delete {
+      background: #ef4444;
+      color: white;
+    }
+
+    .add {
+      background: #10b981;
+      color: white;
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      border-radius: 6px;
+      border: none;
+      background: #1f2937;
+      color: white;
+    }
+
+    .form {
+      margin-top: 30px;
+      background: #111827;
+      padding: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>Gestión de Maestros</h2>
+
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Apellidos</th>
+      <th>Materia</th>
+      <th>Correo</th>
+      <th>Acción</th>
+    </tr>
+  </thead>
+  <tbody id="tabla"></tbody>
+</table>
+
+<div class="form">
+  <h3>Agregar Maestro</h3>
+
+  <input id="nombre" placeholder="Nombre">
+  <input id="apellidos" placeholder="Apellidos">
+  <input id="materia" placeholder="Materia">
+  <input id="correo" placeholder="Correo">
+
+  <button class="add" onclick="agregar()">Agregar</button>
+</div>
+
+<script>
+async function cargar() {
+  const res = await fetch("http://localhost:3000/maestros");
+  const data = await res.json();
+
+  const tabla = document.getElementById("tabla");
+  tabla.innerHTML = "";
+
+  data.forEach(m => {
+    const row = `
+    <tr>
+        <td><input id="nombre-${m.id}" value="${m.nombre}"></td>
+        <td><input id="apellidos-${m.id}" value="${m.apellidos}"></td>
+        <td><input id="materia-${m.id}" value="${m.materia}"></td>
+        <td><input id="correo-${m.id}" value="${m.correo}"></td>
+        <td>
+        <button onclick="editar(${m.id})">Guardar</button>
+        <button class="delete" onclick="eliminar(${m.id})">Eliminar</button>
+        </td>
+    </tr>
+    `;
+    tabla.innerHTML += row;
+  });
+}
+
+async function agregar() {
+  await fetch("http://localhost:3000/maestros", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      nombre: document.getElementById("nombre").value,
+      apellidos: document.getElementById("apellidos").value,
+      materia: document.getElementById("materia").value,
+      correo: document.getElementById("correo").value
+    })
+  });
+
+  // 🔥 LIMPIAR INPUTS
+  document.getElementById("nombre").value = "";
+  document.getElementById("apellidos").value = "";
+  document.getElementById("materia").value = "";
+  document.getElementById("correo").value = "";
+
+  cargar();
+}
+
+async function eliminar(id) {
+  if (!confirm("¿Seguro que quieres eliminar este maestro?")) return;
+
+  await fetch(`http://localhost:3000/maestros/${id}`, {
+    method: "DELETE"
+  });
+
+  cargar();
+}
+
+async function editar(id) {
+  const nombre = document.getElementById(`nombre-${id}`).value;
+  const apellidos = document.getElementById(`apellidos-${id}`).value;
+  const materia = document.getElementById(`materia-${id}`).value;
+  const correo = document.getElementById(`correo-${id}`).value;
+
+  if (!nombre || !apellidos || !materia || !correo) {
+    alert("Completa todos los campos");
+    return;
+  }
+
+  await fetch(`http://localhost:3000/maestros/${id}`, {
+    method: "PUT",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({
+      nombre,
+      apellidos,
+      materia,
+      correo
+    })
+  });
+
+  cargar();
+}
+
+cargar();
+</script>
+
+</body>
+</html>
