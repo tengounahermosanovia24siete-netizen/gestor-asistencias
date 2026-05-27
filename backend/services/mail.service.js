@@ -1,9 +1,10 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
+
   host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  port: 587,
+  secure: false,
 
   auth: {
     user: process.env.EMAIL_USER,
@@ -11,8 +12,28 @@ const transporter = nodemailer.createTransport({
   },
 
   tls: {
-    rejectUnauthorized: false
+    ciphers: "SSLv3"
+  },
+
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000
+
+});
+
+transporter.verify(function(error, success) {
+
+  if (error) {
+
+    console.log("❌ VERIFY ERROR:");
+    console.log(error);
+
+  } else {
+
+    console.log("✅ SMTP READY");
+
   }
+
 });
 
 export const enviarCorreo = async ({ to, subject, text }) => {
@@ -23,10 +44,12 @@ export const enviarCorreo = async ({ to, subject, text }) => {
   try {
 
     const info = await transporter.sendMail({
+
       from: `"Gestor Asistencias" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text
+
     });
 
     console.log("✅ Correo enviado");
@@ -34,8 +57,9 @@ export const enviarCorreo = async ({ to, subject, text }) => {
 
   } catch (error) {
 
-    console.error("❌ ERROR SMTP:");
-    console.error(error);
+    console.log("❌ ERROR SMTP:");
+    console.log(error);
 
   }
+
 };
