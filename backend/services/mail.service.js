@@ -1,7 +1,4 @@
 import nodemailer from "nodemailer";
-import dotenv from "dotenv";
-
-dotenv.config({ path: "./backend/.env" });
 
 const transporter = nodemailer.createTransport({
   service: "gmail",
@@ -12,17 +9,26 @@ const transporter = nodemailer.createTransport({
 });
 
 export const enviarCorreo = async ({ to, subject, text }) => {
+
+  console.log("EMAIL_USER:", process.env.EMAIL_USER);
+  console.log("EMAIL_PASS existe:", !!process.env.EMAIL_PASS);
+
   try {
-    await transporter.sendMail({
+
+    const info = await transporter.sendMail({
       from: process.env.EMAIL_USER,
       to,
       subject,
       text
     });
 
-    console.log("📧 Correo enviado a:", to);
+    console.log("✅ Correo enviado");
+    console.log(info);
 
   } catch (error) {
-    console.error("❌ Error correo:", error.message);
+
+    console.error("❌ ERROR REAL:");
+    console.error(error);
+
   }
 };

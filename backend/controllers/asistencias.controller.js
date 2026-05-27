@@ -64,7 +64,7 @@ export const registrarAsistencia = async (req, res) => {
       ]
     );
 
-    await enviarCorreo({
+    enviarCorreo({
         to: sesion.correo_profesor,
         subject: "Nueva asistencia registrada",
         text: `El alumno ${nombre} ${apellidos} con boleta ${boleta} asistió a ${sesion.materia}`
