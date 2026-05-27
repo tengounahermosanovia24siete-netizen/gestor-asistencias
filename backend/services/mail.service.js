@@ -1,7 +1,13 @@
 import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 import dns from "dns";
 
+dotenv.config();
+
 dns.setDefaultResultOrder("ipv4first");
+
+console.log("EMAIL_USER:", process.env.EMAIL_USER);
+console.log("EMAIL_PASS existe:", !!process.env.EMAIL_PASS);
 
 const transporter = nodemailer.createTransport({
 

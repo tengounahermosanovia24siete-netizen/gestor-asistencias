@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-dotenv.config({ path: "./backend/.env" });
+dotenv.config();
 import path from "path";
 import { fileURLToPath } from "url";
 
