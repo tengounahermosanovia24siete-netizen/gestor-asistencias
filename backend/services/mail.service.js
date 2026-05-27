@@ -1,54 +1,62 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-import dns from "dns";
 
 dotenv.config();
 
-dns.setDefaultResultOrder("ipv4first");
-
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS existe:", !!process.env.EMAIL_PASS);
-
 const transporter = nodemailer.createTransport({
 
-  host: "smtp.gmail.com",
-  port: 465,
-  secure: true,
+  service: "gmail",
 
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
-  },
+  }
 
-  connectionTimeout: 30000,
-  greetingTimeout: 30000,
-  socketTimeout: 30000
+});
+
+// 🔥 Verificar conexión SMTP al iniciar
+transporter.verify((error, success) => {
+
+  if (error) {
+
+    console.log("❌ SMTP VERIFY ERROR:");
+    console.log(error);
+
+  } else {
+
+    console.log("✅ SMTP listo para enviar");
+
+  }
 
 });
 
 export const enviarCorreo = async ({ to, subject, text }) => {
 
-  console.log("📧 Intentando enviar correo...");
-  console.log("Destino:", to);
-
   try {
+
+    console.log("📧 Intentando enviar correo...");
+    console.log("Destino:", to);
 
     const info = await transporter.sendMail({
 
-      from: `"Gestor Asistencias" <${process.env.EMAIL_USER}>`,
+      from: process.env.EMAIL_USER,
       to,
       subject,
       text
 
     });
 
-    console.log("✅ Correo enviado");
-    console.log(info.response);
+    console.log("✅ CORREO ENVIADO");
+    console.log(info);
+
+    return true;
 
   } catch (error) {
 
-    console.log("❌ ERROR SMTP:");
+    console.log("❌ ERROR REAL SMTP:");
     console.log(error);
+
+    return false;
 
   }
 
