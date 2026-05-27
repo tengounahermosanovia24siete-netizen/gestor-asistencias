@@ -43,7 +43,9 @@ export const crearSesion = async (req, res) => {
       ]
     );
 
-    const url = `http://127.0.0.1:5500/frontend/registro.html?sid=${session_id}`;
+    const BASE_URL = process.env.BASE_URL;
+
+    const url = `${BASE_URL}/registro.html?sid=${session_id}`;
 
     const qr = await QRCode.toDataURL(url);
 

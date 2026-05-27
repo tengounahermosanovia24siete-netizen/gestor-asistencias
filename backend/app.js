@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 dotenv.config({ path: "./backend/.env" });
+import path from "path";
+import { fileURLToPath } from "url";
 
 import express from "express";
 import cors from "cors";
@@ -12,6 +14,11 @@ const app = express(); // ✅ PRIMERO crear app
 
 app.use(cors());
 app.use(express.json());
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 // ✅ DESPUÉS usar rutas
 app.use("/sesiones", sesionesRoutes);
