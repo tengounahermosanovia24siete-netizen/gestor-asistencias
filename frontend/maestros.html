@@ -103,7 +103,7 @@
 
 <script>
 async function cargar() {
-  const res = await fetch("http://localhost:3000/maestros");
+  const res = await fetch("/maestros");
   const data = await res.json();
 
   const tabla = document.getElementById("tabla");
@@ -127,7 +127,7 @@ async function cargar() {
 }
 
 async function agregar() {
-  await fetch("http://localhost:3000/maestros", {
+  await fetch("/maestros", {
     method: "POST",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({
@@ -150,7 +150,7 @@ async function agregar() {
 async function eliminar(id) {
   if (!confirm("¿Seguro que quieres eliminar este maestro?")) return;
 
-  await fetch(`http://localhost:3000/maestros/${id}`, {
+  await fetch(`/maestros/${id}`, {
     method: "DELETE"
   });
 
@@ -168,7 +168,7 @@ async function editar(id) {
     return;
   }
 
-  await fetch(`http://localhost:3000/maestros/${id}`, {
+  await fetch(`/maestros/${id}`, {
     method: "PUT",
     headers: {"Content-Type": "application/json"},
     body: JSON.stringify({

@@ -109,7 +109,7 @@
 
 <script>
 async function crearSesion() {
-  const res = await fetch("http://localhost:3000/sesiones", {
+  const res = await fetch("/sesiones", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
@@ -130,7 +130,7 @@ async function crearSesion() {
 }
 
 async function cargarMaestros() {
-  const res = await fetch("http://localhost:3000/maestros");
+  const res = await fetch("/maestros");
   const data = await res.json();
 
   const materiaSelect = document.getElementById("materia");
