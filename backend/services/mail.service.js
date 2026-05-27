@@ -1,33 +1,40 @@
 import nodemailer from "nodemailer";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
+
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
+  },
+
+  tls: {
+    rejectUnauthorized: false
   }
 });
 
 export const enviarCorreo = async ({ to, subject, text }) => {
 
-  console.log("EMAIL_USER:", process.env.EMAIL_USER);
-  console.log("EMAIL_PASS existe:", !!process.env.EMAIL_PASS);
+  console.log("📧 Intentando enviar correo...");
+  console.log("Destino:", to);
 
   try {
 
     const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+      from: `"Gestor Asistencias" <${process.env.EMAIL_USER}>`,
       to,
       subject,
       text
     });
 
     console.log("✅ Correo enviado");
-    console.log(info);
+    console.log(info.response);
 
   } catch (error) {
 
-    console.error("❌ ERROR REAL:");
+    console.error("❌ ERROR SMTP:");
     console.error(error);
 
   }
